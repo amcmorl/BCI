@@ -21,14 +21,12 @@ LAST_FILE    = CONFIG_DIR + '/last_app.txt'
 APPMAN_FILE  = 'appman.conf'
 DEFAULT_HOST = platform.uname()[1]
 
-
 def _convert_camel(name):
     '''
     Converts camel case name to underscored, lower case.
     '''
     s1 = re.sub('([^_])([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
-
 
 def _collect_files(locations, filenames):
     '''
@@ -39,8 +37,6 @@ def _collect_files(locations, filenames):
         for f in filenames:
             found_files.extend(glob(loc + '/' + f))
     return found_files
-
-
 
 def _prune_files(files):
     '''
@@ -54,8 +50,6 @@ def _prune_files(files):
         else:
             i += 1
     return list(set(files))
-
-
 
 def _detect_directory(module, verbose=False):
     '''
@@ -71,8 +65,6 @@ def _detect_directory(module, verbose=False):
         print "Found directory: %s" % (directory)
     return directory
 
-
-
 def _raise_no_files(search_string):
     '''
     '''
@@ -80,16 +72,12 @@ def _raise_no_files(search_string):
         "Looked for %s" % (search_string)
     raise ValueError(msg_str)
 
-
-
 def _raise_too_many_files(potential_files):
     '''
     '''
     msg_str = "More than one potential file:\n"
     msg_str += '\n'.join(potential_files)
     raise ValueError(msg_str)
-
-
 
 def _detect_module_file_and_type(module, directory, verbose=False):
     '''
@@ -134,8 +122,6 @@ def _detect_module_file_and_type(module, directory, verbose=False):
         print "Found module file: %s" % (module_file)
     return os.path.basename(module_file), module_type
 
-
-
 def _detect_type(module_file, fail_hard=False):
     ext = os.path.splitext(module_file)[1]
     if ext == '.py':
@@ -148,8 +134,6 @@ def _detect_type(module_file, fail_hard=False):
         if fail_hard:
             raise ValueError('Type not known for file %s' % (module_file))
         return None
-
-
 
 def _detect_conf_file(module, app, verbose=False):
     '''

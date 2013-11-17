@@ -2,9 +2,10 @@ import sys
 import os
 import wx
 import re
-from enthought.traits.api import Str, HasTraits, DelegatesTo, List, This, \
+
+from traits.api import Str, HasTraits, DelegatesTo, List, This, \
                                 Dict, Any, Instance, Enum
-from enthought.traits.ui.api import View, Item, TreeEditor, TreeNode, Group
+from traitsui.api import View, Item, TreeEditor, TreeNode, Group
 import subprocess
 from argparse import ArgumentParser
 from ConfigParser import SafeConfigParser

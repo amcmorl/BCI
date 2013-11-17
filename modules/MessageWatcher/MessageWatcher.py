@@ -2,7 +2,7 @@ import numpy as np
 import Dragonfly_config as rc
 from argparse import ArgumentParser
 from ConfigParser import SafeConfigParser
-from PyDragonfly import Dragonfly_Module, CMessage, copy_to_msg, copy_from_msg
+from PyDragonfly import Dragonfly_Module, CMessage
 from time import time
 
 class MessageWatcher(object):
@@ -16,7 +16,8 @@ class MessageWatcher(object):
     
     def __init__(self, config_file):
         self.load_config(config_file)
-        self.msg_nums = [eval('rc.MT_%s' % (x)) for x in self.msg_types]
+        self.compile_msg_nums()
+        #self.msg_nums = [eval('rc.MT_%s' % (x)) for x in self.msg_types]
         self.count = np.zeros((len(self.msg_nums)), dtype=int)
         self.last_time = time()
         self.setup_Dragonfly()
@@ -25,15 +26,28 @@ class MessageWatcher(object):
     def load_config(self, config_file):
         self.config = SafeConfigParser()
         self.config.read(config_file)
-        self.msg_types = [x.upper() for x in self.config.options('messages')]
+        self.msg_types = [x for x in self.config.options('messages')]
         self.msg_types.sort()
+
+    def compile_msg_nums(self):
+        self.msg_nums = []
+        for mt in self.msg_types:
+            parts = mt.split('.')
+            if len(parts) == 2:
+                modl, msg = parts
+                print modl, msg.upper()
+                exec('import %s' % (modl))
+                self.msg_nums.append(eval('%s.MT_%s' % (modl, msg.upper())))
+            else:
+                print parts[0]
+                self.msg_nums.append(eval('rc.MT_%s' % (parts[0].upper())))
 
     def setup_Dragonfly(self):
         server = self.config.get('Dragonfly', 'server')
         self.mod = Dragonfly_Module(0, 0)
         self.mod.ConnectToMMM(server)
-        for i in self.msg_types:
-            self.mod.Subscribe(eval('rc.MT_%s' % (i)))
+        for i in self.msg_nums:
+            self.mod.Subscribe(i)
         self.mod.SendModuleReady()
         print "Connected to Dragonfly at", server
         

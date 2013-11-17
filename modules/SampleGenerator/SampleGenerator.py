@@ -4,7 +4,8 @@ import time
 import sys
 import platform
 from ConfigParser import SafeConfigParser
-from PyDragonfly import Dragonfly_Module, CMessage, copy_to_msg, copy_from_msg, MT_EXIT
+from PyDragonfly import Dragonfly_Module, CMessage, copy_to_msg, \
+    copy_from_msg, MT_EXIT
 from argparse import ArgumentParser
 from dragonfly_utils import respond_to_ping
 import Dragonfly_config as rc

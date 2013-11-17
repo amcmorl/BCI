@@ -14,17 +14,17 @@ import re
 import wx
 import platform
 
-from enthought.traits.api import HasTraits, Bool, Enum, Float, Str, List, File, \
+from traits.api import HasTraits, Bool, Enum, Float, Str, List, File, \
      Button, String, Instance
-from enthought.traits.ui.api import Handler, View, Item, UItem, StatusItem, \
+from traitsui.api import Handler, View, Item, UItem, StatusItem, \
      Group, HGroup, VGroup, spring, EnumEditor, ButtonEditor, TextEditor, InstanceEditor
-from enthought.traits.ui.wx.animated_gif_editor import AnimatedGIFEditor
+from traitsui.wx.animated_gif_editor import AnimatedGIFEditor
 from output_stream import OutputStream
 
 
-SRC_DIR = os.environ['BCI_MODULES']
+SRC_DIR    = os.environ['BCI_MODULES']
 CONFIG_DIR = os.environ['BCI_CONFIG']
-DATA_DIR = os.environ['BCI_DATA']
+DATA_DIR   = os.environ['BCI_DATA']
 
 
 def get_dirs(root, exclude=['attic']):
@@ -132,8 +132,11 @@ class SessionManager(HasTraits):
     multi_task_config = Bool(False)
     multi_task_file = None
 
-    subscriptions = [rc.MT_PING_ACK, rc.MT_APP_START_COMPLETE, rc.MT_SESSION_CONFIG,
-                     rc.MT_EXIT_ACK, rc.MT_XM_END_OF_SESSION]
+    subscriptions = [rc.MT_PING_ACK,
+                     rc.MT_APP_START_COMPLETE,
+                     rc.MT_SESSION_CONFIG,
+                     rc.MT_EXIT_ACK,
+                     rc.MT_XM_END_OF_SESSION]
 
     busy_anim_file = File(SRC_DIR + '/ApplicationControl/busy.gif')
     appman_busy = Bool(False)
@@ -151,15 +154,37 @@ class SessionManager(HasTraits):
     view = View(VGroup(
                  HGroup(
                   HGroup(
-                     VGroup(Item(name='config_label', show_label=False, style='readonly'),
-                            Item(name='configs', label='Session', show_label=False, enabled_when='configs_enabled')),
-                     VGroup(Item(name='monkey_label', show_label=False, style='readonly'),
-                            Item(name='monkeys', label='Monkey', show_label=False, enabled_when='monkeys_enabled')),
-                     VGroup(Item(name='calib_label', show_label=False, style='readonly'),
-                            Item(name='calib_opts', editor=EnumEditor(values=calib_options), enabled_when='calib_opts_enabled', label='CalibOpt', show_label=False),
+                     VGroup(Item(name='config_label',
+                                 show_label=False,
+                                 style='readonly'),
+                            Item(name='configs',
+                                 label='Session',
+                                 show_label=False,
+                                 enabled_when='configs_enabled')),
+                     VGroup(Item(name='monkey_label',
+                                 show_label=False,
+                                 style='readonly'),
+                            Item(name='monkeys',
+                                 label='Monkey',
+                                 show_label=False,
+                                 enabled_when='monkeys_enabled')),
+                     VGroup(Item(name='calib_label',
+                                 show_label=False,
+                                 style='readonly'),
+                            Item(name='calib_opts',
+                                 editor=EnumEditor(values=calib_options),
+                                 enabled_when='calib_opts_enabled',
+                                 label='CalibOpt',
+                                 show_label=False),
                             visible_when='calib_opts_visible==True'),
-                     VGroup(Item(name='session_label', show_label=False, style='readonly'),
-                            Item(name='calib_session', width=175, editor = EnumEditor(name = 'calib_session_list'), enabled_when='calib_session_enabled', show_label=False),
+                     VGroup(Item(name='session_label',
+                                 show_label=False,
+                                 style='readonly'),
+                            Item(name='calib_session',
+                                 width=175,
+                                 editor=EnumEditor(name='calib_session_list'),
+                                 enabled_when='calib_session_enabled',
+                                 show_label=False),
                             visible_when='calib_session_visible==True'),
                      springy=True),
 
@@ -196,7 +221,8 @@ class SessionManager(HasTraits):
 
     def _modules_fired(self):
         import modman
-        self.modman_frame = modman.MainWindow(self.parent, -1, self.statusbar_text, self.modman_closing)
+        self.modman_frame = modman.MainWindow(self.parent, -1,
+            self.statusbar_text, self.modman_closing)
 
     def modman_closing(self):
         print "modman exiting..."
@@ -220,7 +246,6 @@ class SessionManager(HasTraits):
     def _calib_opts_changed(self):
         self.update_calib_sessions()
 
-
     def get_last_subject(self):
         last_subject_file = CONFIG_DIR + '/' + self.configs + '/last_subject.txt'
         if os.path.isfile(last_subject_file):
@@ -239,7 +264,6 @@ class SessionManager(HasTraits):
             self.calib_opts_visible = True
             self.multi_task_file = None
             self.update_calib_sessions()
-
 
     def get_calib_sessions(self):
         try:
@@ -269,15 +293,12 @@ class SessionManager(HasTraits):
                     if self.calib_session not in self.calib_session_list:
                         print "here"
                         self.calib_session = self.calib_session_list[-1]
-
                 else:
                     self.calib_session_enabled = False
                     self.calib_session = self.calib_session_list[-1]
-
         else:
             self.start_enabled = True
             self.calib_session_visible = False
-
 
     def connect(self, server):
         self.mod = Dragonfly_Module(0, 0)
@@ -287,10 +308,8 @@ class SessionManager(HasTraits):
         self.mod.SendModuleReady()
         print "Connected to Dragonfly at", server
 
-
     def disconnect(self):
         self.mod.DisconnectFromMMM()
-
 
     def proc_modules_PING_ACK(self, msg, data):
         result = 0
@@ -305,7 +324,6 @@ class SessionManager(HasTraits):
             result = 1
 
         return result
-
 
     def proc_hosts_PING_ACK(self, msg, data):
         result = 0
@@ -326,7 +344,6 @@ class SessionManager(HasTraits):
 
         return result
 
-
     def proc_APP_START_COMPLETE(self, msg, data):
         result = 0
 
@@ -339,7 +356,6 @@ class SessionManager(HasTraits):
             result = 1
 
         return result
-
 
     def proc_modules_EXIT_ACK(self, msg, data):
         result = 0
@@ -426,7 +442,6 @@ class SessionManager(HasTraits):
             self.update_status("%s" % e)
             self.error_flag = True
 
-
     def _kill_fired(self):
         dlg = wx.MessageDialog(self.parent,
             "Do you really want to kill all running modules?",
@@ -440,7 +455,6 @@ class SessionManager(HasTraits):
             self.module_id_list = None
             #self.kill_enabled = False
             self.update_status("Modules killed")
-
 
     def do_stop_modules(self):
         try:
@@ -487,7 +501,6 @@ class SessionManager(HasTraits):
             self.session_ending = False
             self.module_id_list = None
 
-
     def _stop_fired(self):
         if self.module_id_list is None:
             appman.stop_modules(self.mod)
@@ -501,7 +514,6 @@ class SessionManager(HasTraits):
 
         else:
             self.do_stop_modules()
-
 
     def _start_fired(self):
         # advance to the next iteration of the multi_task
@@ -746,7 +758,6 @@ class SessionManager(HasTraits):
 
                     self.do_stop_modules()
 
-
             except (RuntimeError, ValueError) as e:
                 self.update_status("%s" % e)
                 self.error_flag = True
@@ -793,8 +804,6 @@ class MainWindow(wx.Frame):
         self.Destroy()
         self.sm.disconnect()
 
-
-
 if __name__ == "__main__":
     parser = ArgumentParser(description = "Starts session modules")
     parser.add_argument(type=str, dest='mm_ip', nargs='?', default='127.0.0.1:7111')
@@ -804,5 +813,3 @@ if __name__ == "__main__":
     app = wx.PySimpleApp()
     frame = MainWindow(args.mm_ip)
     app.MainLoop()
-
-
